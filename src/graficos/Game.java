@@ -19,18 +19,25 @@ public class Game extends Canvas implements Runnable {
 	private final int WIDTH = 240;
 	private final int HEIGHT = 160;
 	private final int SCALE = 3;
-	
+
 	private BufferedImage image;
-	
+
 	private SpriteSheet sheet;
-	private BufferedImage player;
+	private BufferedImage[] player;
+	private int frames = 0;
+	private int maxFrames = 12;
+	private int curAnimation = 0,maxAnimation =3;
 
 	public Game() throws IOException {
 		sheet = new SpriteSheet("/spritesheet.png");
-		player = sheet.getSprite(0, 0, 16, 16);
+		player = new BufferedImage[4];
+		player[0] = sheet.getSprite(0, 0, 16, 16);
+		player[1] = sheet.getSprite(16, 0, 16, 16);
+		player[2] = sheet.getSprite(32, 0, 16, 16);
+		player[3] = sheet.getSprite(48, 0, 16, 16);
 		setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		initFrame();
-		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_BGR);
+		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_BGR);
 	}
 
 	public void initFrame() {
@@ -65,28 +72,35 @@ public class Game extends Canvas implements Runnable {
 
 	public void update() {
 
+		frames++;
+		if (frames > maxFrames) {
+			frames = 0;
+			curAnimation++;
+			if (curAnimation > maxAnimation) {
+				curAnimation = 0;
+			}
+		}
 	}
 
-	public void render() {  //Renderização funciona por ordem de código, primeira linhas, segunda, etc...
+	public void render() { // Renderização funciona por ordem de código, primeira linhas, segunda, etc...
 
 		BufferStrategy bs = this.getBufferStrategy();
-		if(bs == null) {
+		if (bs == null) {
 			this.createBufferStrategy(3);
 			return;
 		}
 		Graphics g = image.getGraphics();
-		g.setColor(new Color(45,26,42));
+		g.setColor(new Color(45, 26, 42));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
-		
+
 //		Renderizar jogo
-		
-		
-		Graphics2D g2 = (Graphics2D) g;    
+
+		Graphics2D g2 = (Graphics2D) g;
 //		g2.rotate(Math.toRadians(90),90+8,90+8); ROTACIONAR
-		
+
 //		g2.setColor(new Color(0,0,0,120));  // Escurecendo RGBS
 		g2.fillRect(0, 0, WIDTH, HEIGHT);
-		g.drawImage(player, 20, 20,null);
+		g.drawImage(player[curAnimation], 20, 20, null);
 //		
 		g.dispose();
 //		g.setColor(Color.CYAN);
@@ -94,9 +108,9 @@ public class Game extends Canvas implements Runnable {
 //		g.setFont(new Font("Arial",Font.BOLD,20));
 //		g.setColor(Color.white);
 //		g.drawString("Olá mundo", 20,20);
-		
+
 		g = bs.getDrawGraphics();
-		g.drawImage(image, 0, 0, WIDTH*SCALE, HEIGHT*SCALE, null);
+		g.drawImage(image, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null);
 		bs.show();
 	}
 
